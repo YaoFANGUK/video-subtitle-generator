@@ -1,6 +1,7 @@
 ### 项目介绍
 
-- 支持中文、英文、韩文、日文、越南语、俄语、西班牙语、葡萄语等语言的字幕生成，错词率如下：
+- 支持中文、英文、韩文、日文、越南语、俄语、西班牙语、葡萄语等语言的字幕生成
+- large 模型错词率（WER）如下：
 
 <img src="https://github.com/YaoFANGUK/video-subtitle-generator/blob/main/design/language-breakdown.svg?raw=true" alt="demo">
 
@@ -29,7 +30,7 @@ pip install -r requirements.txt
 
 - 设置模型文件
 
-修改settings.ini中的Mode，取值为：base, medium, large
+修改settings.ini中的Mode，取值为：base, medium, large，即可使用对应的识别模型
 
 |  Mode  |  要求显存  |  速度  |
 |:------:|:------:|:----:|
