@@ -12,14 +12,14 @@ import tempfile
 import warnings
 import whisper
 warnings.filterwarnings('ignore')
-from backend.utils.formatter import FORMATTERS
 import librosa
 import os
 import stat
 import audioop
-from backend import config
 import wave
 import math
+import config
+from utils.formatter import FORMATTERS
 
 
 class AudioRecogniser:
