@@ -9,6 +9,7 @@ import io
 import multiprocessing
 import subprocess
 import tempfile
+import time
 import warnings
 import whisper
 warnings.filterwarnings('ignore')
@@ -90,9 +91,10 @@ class SubtitleGenerator:
     def __init__(self, filename, language='auto'):
         self.filename = filename
         self.language = language
+        self.isFinished = False
         if self.language not in config.LANGUAGE_LIST:
             # 如果识别语言不存在，则默认使用auto
-            print(f'识别语言{language}不存在，自动检测语言')
+            print(config.interface_config['Main']['IllegalLanguageCode'])
             self.language = 'auto'
 
     @staticmethod
@@ -116,7 +118,6 @@ class SubtitleGenerator:
         fpath, _ = os.path.split(program)
         if fpath:
             if is_exe(program):
-                print('成功获取ffmpeg程序')
                 return program
         else:
             for path in os.environ["PATH"].split(os.pathsep):
@@ -207,6 +208,9 @@ class SubtitleGenerator:
         converter = FLACConverter(source_path=audio_filename)
         recognizer = AudioRecogniser(language=self.language)
         transcripts = []
+        print(f"{config.interface_config['Main']['StartGenerateSub']}")
+        start_time = time.time()
+
         if regions:
             try:
                 extracted_regions = []
@@ -228,7 +232,6 @@ class SubtitleGenerator:
 
         timed_subtitles = [(r, t) for r, t in zip(regions, transcripts) if t]
         formatter = FORMATTERS.get(subtitle_file_format)
-        # print(timed_subtitles)
         formatted_subtitles = formatter(subtitles=timed_subtitles)
         dest = output
         if not dest:
@@ -238,13 +241,18 @@ class SubtitleGenerator:
         with open(dest, 'wb') as output_file:
             output_file.write(formatted_subtitles.encode("utf-8"))
         os.remove(audio_filename)
+        self.isFinished = True
+        elapse = time.time() - start_time
+        print(f"{config.interface_config['Main']['FinishGenerateSub']}")
+        print(f"{config.interface_config['Main']['SubLocation']}{dest}")
+        print(f"{config.interface_config['Main']['Elapse']}: {elapse}s")
         return dest
 
 
 if __name__ == '__main__':
     # 1. 获取视频地址
-    video_path = input('请输入视频地址: ').strip()
+    video_path = input(f"{config.interface_config['Main']['InputFile']}").strip()
     # 2. 新建字幕生成对象，指定语言
-    sg = SubtitleGenerator(video_path, language='zh-cn')
+    sg = SubtitleGenerator(video_path, language=config.REC_LANGUAGE_TYPE)
     # 3. 运行程序
     sg.run()
