@@ -66,8 +66,8 @@ python backend/main.py
 ```shell
     # 1.指定音视频文件路径
     wav_path = './test/test.flv'
-    # 2. 新建字幕提取器
-    sg = SubtitleGenerator(wav_path)
+    # 2. 新建字幕生成对象，指定语言
+    sg = SubtitleGenerator(video_path, language='zh-cn')
     # 3. 运行字幕生成
     ret = sg.run()
 ```

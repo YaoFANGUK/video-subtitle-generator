@@ -20,25 +20,39 @@ import wave
 import math
 import config
 from utils.formatter import FORMATTERS
+from zhconv.zhconv import convert
 
 
 class AudioRecogniser:
-    def __init__(self):
+    def __init__(self, language='auto'):
         self.model_path = config.ASR_MODEL_PATH
         self.model = whisper.load_model(self.model_path)
+        self.language = language
 
     def __call__(self, audio_data):
         audio_data = whisper.pad_or_trim(audio_data)
         mel = whisper.log_mel_spectrogram(audio_data).to(self.model.device)
 
-        # detect the spoken language
+        # 检测音频语言
         _, probs = self.model.detect_language(mel)
-        print(f"Detected language: {max(probs, key=probs.get)}")
 
         # decode the audio
-        options = whisper.DecodingOptions(fp16=False)
+        if self.language != 'auto':
+            if self.language in ('zh-cn', 'zh-tw', 'zh-hk', 'zh-sg', 'zh-hans', 'zh-hant'):
+                options = whisper.DecodingOptions(fp16=False, language='zh')
+            else:
+                options = whisper.DecodingOptions(fp16=False, language=self.language)
+        else:
+            # 如果没设置语言则自动检测语言
+            print(f"检测到的语言: {max(probs, key=probs.get)}")
+            options = whisper.DecodingOptions(fp16=False)
+
         transcription = whisper.decode(self.model, mel, options)
-        return transcription.text
+        if self.language in ('zh-cn', 'zh-tw', 'zh-hk', 'zh-sg', 'zh-hans', 'zh-hant'):
+            text = convert(transcription.text, self.language)
+        else:
+            text = transcription.text
+        return text
 
 
 class FLACConverter:  # pylint: disable=too-few-public-methods
@@ -73,8 +87,13 @@ class FLACConverter:  # pylint: disable=too-few-public-methods
 
 class SubtitleGenerator:
 
-    def __init__(self, filename):
+    def __init__(self, filename, language='auto'):
         self.filename = filename
+        self.language = language
+        if self.language not in config.LANGUAGE_LIST:
+            # 如果识别语言不存在，则默认使用auto
+            print(f'识别语言{language}不存在，自动检测语言')
+            self.language = 'auto'
 
     @staticmethod
     def which(program):
@@ -97,7 +116,7 @@ class SubtitleGenerator:
         fpath, _ = os.path.split(program)
         if fpath:
             if is_exe(program):
-                print('return program')
+                print('成功获取ffmpeg程序')
                 return program
         else:
             for path in os.environ["PATH"].split(os.pathsep):
@@ -186,7 +205,7 @@ class SubtitleGenerator:
         regions = self.find_speech_regions(audio_filename)
         pool = multiprocessing.Pool(concurrency)
         converter = FLACConverter(source_path=audio_filename)
-        recognizer = AudioRecogniser()
+        recognizer = AudioRecogniser(language=self.language)
         transcripts = []
         if regions:
             try:
@@ -223,6 +242,9 @@ class SubtitleGenerator:
 
 
 if __name__ == '__main__':
+    # 1. 获取视频地址
     video_path = input('请输入视频地址: ').strip()
-    sg = SubtitleGenerator(video_path)
+    # 2. 新建字幕生成对象，指定语言
+    sg = SubtitleGenerator(video_path, language='zh-cn')
+    # 3. 运行程序
     sg.run()
