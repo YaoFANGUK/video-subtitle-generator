@@ -1,16 +1,14 @@
 ### 项目介绍
 
-Video-subtitle-generator (vsg) 是一款将视频中的语音提取为外挂字幕文件(srt格式)的软件。 
+Video-subtitle-generator (vsg) 是一款基于语音识别，将音频/视频生成外挂字幕文件(srt格式)的软件。 
 
 - 支持中文、英文、韩文、日文、越南语、俄语、西班牙语、葡萄语等语言的字幕生成
-- large 模型错词率（WER）如下：
 
-<img src="https://github.com/YaoFANGUK/video-subtitle-generator/blob/main/design/language-breakdown.svg?raw=true" alt="demo">
+<img src="https://github.com/YaoFANGUK/video-subtitle-generator/blob/main/design/gui.png?raw=true" alt="gui">
 
 ### DEMO
 
 <img src="https://github.com/YaoFANGUK/video-subtitle-generator/blob/main/design/demo.gif?raw=true" alt="demo">
-
 
 ## 源码使用说明
 
@@ -54,12 +52,12 @@ pip install -r requirements.txt
 
 #### 4. 运行程序
 
-- 运行图形化界面版本
+- 运行图形化界面版本(GUI)
 
 ```SHELL
 python gui.py
-
 ```
+
 - 运行命令行版本(CLI)
 
 ```SHELL
