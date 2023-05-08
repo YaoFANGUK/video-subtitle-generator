@@ -54,6 +54,12 @@ pip install -r requirements.txt
 
 #### 4. 运行程序
 
+- 运行图形化界面版本
+
+```SHELL
+python gui.py
+
+```
 - 运行命令行版本(CLI)
 
 ```SHELL
