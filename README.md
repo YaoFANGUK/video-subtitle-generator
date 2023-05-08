@@ -4,7 +4,7 @@ Video-subtitle-generator (vsg) 是一款基于语音识别，将音频/视频生
 
 - 支持中文、英文、韩文、日文、越南语、俄语、西班牙语、葡萄语等语言的字幕生成
 
-<img src="https://github.com/YaoFANGUK/video-subtitle-generator/blob/main/design/gui.png?raw=true" alt="gui">
+<img src="https://github.com/YaoFANGUK/video-subtitle-generator/blob/main/design/gui.png?raw=true" alt="gui" border="1px" >
 
 ### DEMO
 
