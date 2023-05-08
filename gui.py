@@ -9,7 +9,6 @@ import os
 import configparser
 import PySimpleGUI as sg
 from threading import Thread
-import backend.config
 from backend import main
 
 
@@ -89,8 +88,7 @@ class SubtitleGeneratorGUI:
                     self.window['-FILE-'].update(disabled=True)
                     self.window['-FILE_BTN-'].update(disabled=True)
                     self.window['-LANGUAGE-MODE-'].update(disabled=True)
-                    print(f"{backend.config.interface_config['Main']['RecSubLang']}: {backend.config.REC_LANGUAGE_TYPE}")
-                    print(f"{backend.config.interface_config['Main']['RecMode']}: {backend.config.settings_config['DEFAULT']['Mode']}")
+
 
     def update_interface_text(self):
         self._load_config()
@@ -172,7 +170,7 @@ class SubtitleGeneratorGUI:
                     while self.file_paths:
                         print(self.file_paths)
                         file_path = self.file_paths.pop()
-                        self.sg = main.SubtitleGenerator(file_path, backend.config.REC_LANGUAGE_TYPE)
+                        self.sg = main.SubtitleGenerator(file_path, self.config['DEFAULT']['Language'])
                         self.sg.run()
                 Thread(target=task, daemon=False).start()
 
@@ -299,6 +297,8 @@ class LanguageModeGUI:
             self.window.close()
             title = self._create_layout()
             self.window = sg.Window(title=title, layout=self.layout, icon=self.icon)
+            print(f"{self.interface_config['Main']['RecSubLang']}: {config['DEFAULT']['Language']}")
+            print(f"{self.interface_config['Main']['RecMode']}: {config['DEFAULT']['Mode']}")
 
     @staticmethod
     def set_config(config_file, interface, language_code, mode):
@@ -317,6 +317,7 @@ class LanguageModeGUI:
 
         self.LANGUAGE_DEF = config_language_mode_gui["LanguageZH-CN"]
         self.LANGUAGE_NAME_KEY_MAP = {}
+        import backend.config
         for lang in backend.config.LANGUAGE_LIST:
             self.LANGUAGE_NAME_KEY_MAP[config_language_mode_gui[f"Language{lang.upper()}"]] = lang
         self.LANGUAGE_NAME_KEY_MAP = dict(sorted(self.LANGUAGE_NAME_KEY_MAP.items(), key=lambda item: item[1]))
