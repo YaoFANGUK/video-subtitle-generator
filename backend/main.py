@@ -45,7 +45,7 @@ class AudioRecogniser:
                 options = whisper.DecodingOptions(fp16=False, language=self.language)
         else:
             # 如果没设置语言则自动检测语言
-            print(f"检测到的语言: {max(probs, key=probs.get)}")
+            print(f"{config.interface_config['Main']['LanguageDetected']}{max(probs, key=probs.get)}")
             options = whisper.DecodingOptions(fp16=False)
 
         transcription = whisper.decode(self.model, mel, options)

@@ -9,7 +9,6 @@ import os
 import configparser
 import PySimpleGUI as sg
 from threading import Thread
-from backend import main
 
 
 class SubtitleGeneratorGUI:
@@ -92,10 +91,11 @@ class SubtitleGeneratorGUI:
 
     def update_interface_text(self):
         self._load_config()
-        self.window.set_title(self.interface_config['SubtitleGeneratorGUI']['Title'])
-        self.window['-FILE_BTN-'].Update(self.interface_config['SubtitleGeneratorGUI']['Open'])
-        self.window['-RUN-'].Update(self.interface_config['SubtitleGeneratorGUI']['Run'])
-        self.window['-LANGUAGE-MODE-'].Update(self.interface_config['SubtitleGeneratorGUI']['Setting'])
+        if self.window is not None:
+            self.window.set_title(self.interface_config['SubtitleGeneratorGUI']['Title'])
+            self.window['-FILE_BTN-'].Update(self.interface_config['SubtitleGeneratorGUI']['Open'])
+            self.window['-RUN-'].Update(self.interface_config['SubtitleGeneratorGUI']['Run'])
+            self.window['-LANGUAGE-MODE-'].Update(self.interface_config['SubtitleGeneratorGUI']['Setting'])
 
     def _create_layout(self):
         """
@@ -170,6 +170,7 @@ class SubtitleGeneratorGUI:
                     while self.file_paths:
                         print(self.file_paths)
                         file_path = self.file_paths.pop()
+                        from backend import main
                         self.sg = main.SubtitleGenerator(file_path, self.config['DEFAULT']['Language'])
                         self.sg.run()
                 Thread(target=task, daemon=False).start()
@@ -177,8 +178,8 @@ class SubtitleGeneratorGUI:
 
 
 class LanguageModeGUI:
-    def __init__(self, subtitle_extractor_gui):
-        self.subtitle_extractor_gui = subtitle_extractor_gui
+    def __init__(self, subtitle_generator_gui):
+        self.subtitle_extractor_gui = subtitle_generator_gui
         self.icon = os.path.join(os.path.dirname(__file__), 'design', 'vsg.ico')
         self.config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.ini')
         # 设置界面
@@ -334,8 +335,8 @@ class LanguageModeGUI:
         if not os.path.exists(config_file):
             self.interface_config.read(self.interface_file, encoding='utf-8')
             interface_def = self.interface_config['LanguageModeGUI']['InterfaceDefault']
-            language_def = self.interface_config['LanguageModeGUI']['InterfaceDefault']
-            mode_def = self.interface_config['LanguageModeGUI']['ModeFast']
+            language_def = self.interface_config['LanguageModeGUI']['LanguageAUTO']
+            mode_def = self.interface_config['LanguageModeGUI']['ModeMedium']
             return interface_def, language_def, mode_def
         config = configparser.ConfigParser()
         config.read(config_file, encoding='utf-8')
