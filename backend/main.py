@@ -27,8 +27,7 @@ from zhconv.zhconv import convert
 class AudioRecogniser:
     def __init__(self, language='auto'):
         self.model_path = config.ASR_MODEL_PATH
-        # self.model = whisper.load_model(self.model_path)
-        self.model = whisper.load_model('large-v2')
+        self.model = whisper.load_model(self.model_path)
         self.language = language
 
     def __call__(self, audio_data):
