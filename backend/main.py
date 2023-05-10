@@ -18,6 +18,8 @@ import stat
 import audioop
 import wave
 import math
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from backend import config
 from backend import whisper
 from backend.utils.formatter import FORMATTERS
