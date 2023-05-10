@@ -47,7 +47,7 @@ class AudioRecogniser:
                 options = whisper.DecodingOptions(fp16=False, language=self.language)
         else:
             # 如果没设置语言则自动检测语言
-            print(f"{config.interface_config['Main']['LanguageDetected']}{max(probs, key=probs.get)}")
+            print(f"{config.get_interface_config()['Main']['LanguageDetected']}{max(probs, key=probs.get)}")
             options = whisper.DecodingOptions(fp16=False)
 
         transcription = whisper.decode(self.model, mel, options)
@@ -99,7 +99,7 @@ class SubtitleGenerator:
         self.isFinished = False
         if self.language not in config.LANGUAGE_LIST:
             # 如果识别语言不存在，则默认使用auto
-            print(config.interface_config['Main']['IllegalLanguageCode'])
+            print(config.get_interface_config()['Main']['IllegalLanguageCode'])
             self.language = 'auto'
 
     @staticmethod
@@ -213,7 +213,7 @@ class SubtitleGenerator:
         converter = FLACConverter(source_path=audio_filename)
         recognizer = AudioRecogniser(language=self.language)
         transcripts = []
-        print(f"{config.interface_config['Main']['StartGenerateSub']}")
+        print(f"{config.get_interface_config()['Main']['StartGenerateSub']}")
         start_time = time.time()
 
         if regions:
@@ -248,15 +248,15 @@ class SubtitleGenerator:
         os.remove(audio_filename)
         self.isFinished = True
         elapse = time.time() - start_time
-        print(f"{config.interface_config['Main']['FinishGenerateSub']}")
-        print(f"{config.interface_config['Main']['SubLocation']}{dest}")
-        print(f"{config.interface_config['Main']['Elapse']}: {elapse}s")
+        print(f"{config.get_interface_config()['Main']['FinishGenerateSub']}")
+        print(f"{config.get_interface_config()['Main']['SubLocation']}{dest}")
+        print(f"{config.get_interface_config()['Main']['Elapse']}: {elapse}s")
         return dest
 
 
 if __name__ == '__main__':
     # 1. 获取视频地址
-    video_path = input(f"{config.interface_config['Main']['InputFile']}").strip()
+    video_path = input(f"{config.get_interface_config()['Main']['InputFile']}").strip()
     # 2. 新建字幕生成对象，指定语言
     sg = SubtitleGenerator(video_path, language=config.REC_LANGUAGE_TYPE)
     # 3. 运行程序

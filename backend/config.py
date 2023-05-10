@@ -12,9 +12,6 @@ import configparser
 import platform
 import stat
 
-CLEAN_UP = False   # cleanup改成True会删除合并前的文件
-SETTINGS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'settings.ini')
-
 
 def merge_large_file(file_name, file_dir):
     """
@@ -46,9 +43,30 @@ def get_model_path():
     return model_path
 
 
+def get_interface_config():
+    # 读取interface下的语言配置,e.g. ch.ini
+    interface_config = configparser.ConfigParser()
+    interface_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'interface',
+                                  f"{INTERFACE_KEY_NAME_MAP[get_settings_config()['DEFAULT']['Interface']]}.ini")
+    interface_config.read(interface_file, encoding='utf-8')
+    return interface_config
+
+
+def init_settings_config():
+    if not os.path.exists(SETTINGS_PATH):
+        # 如果没有配置文件，默认使用中文
+        with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'settings.ini'), mode='w', encoding='utf-8') as f:
+            f.write('[DEFAULT]\n')
+            f.write('Interface = 简体中文\n')
+            f.write('Language = auto\n')
+            f.write('Mode = medium')
+
+
 # --------------------- 请你不要改 start-----------------------------
 # 项目的base目录
 BASE_DIR = str(Path(os.path.abspath(__file__)).parent)
+# 设置文件保存路径
+SETTINGS_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'settings.ini')
 # 识别语言
 LANGUAGE_LIST = (
     "auto", "en", 'zh-cn', 'zh-tw', 'zh-hk', 'zh-sg', 'zh-hans', 'zh-hant', "de", "es", "ru", "ko",
@@ -57,24 +75,13 @@ LANGUAGE_LIST = (
     "te", "fa", "lv", "bn", "sr", "az", "sl", "kn", "et", "mk", "br", "eu", "is", "hy", "ne", "mn", "bs",
     "kk", "sq", "sw", "gl", "mr", "pa", "si", "km", "sn", "yo", "so", "af", "oc", "ka", "be", "tg", "sd"
 )
-if not os.path.exists(SETTINGS_PATH):
-    # 如果没有配置文件，默认使用中文
-    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'settings.ini'), mode='w', encoding='utf-8') as f:
-        f.write('[DEFAULT]\n')
-        f.write('Interface = 简体中文\n')
-        f.write('Language = auto\n')
-        f.write('Mode = medium')
-# 读取interface下的语言配置,e.g. ch.ini
-interface_config = configparser.ConfigParser()
 INTERFACE_KEY_NAME_MAP = {
     '简体中文': 'ch',
     '繁體中文': 'chinese_cht',
     'English': 'en'
 }
-interface_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'interface',
-                              f"{INTERFACE_KEY_NAME_MAP[get_settings_config()['DEFAULT']['Interface']]}.ini")
-interface_config.read(interface_file, encoding='utf-8')
-
+CLEAN_UP = False   # cleanup改成True会删除合并前的文件
+init_settings_config()
 # 查看该路径下是否有语音模型识别完整文件，没有的话合并小文件生成完整文件
 merge_large_file('infer_model', os.path.join(BASE_DIR, 'models', 'base_asr'))
 merge_large_file('infer_model', os.path.join(BASE_DIR, 'models', 'medium_asr'))
