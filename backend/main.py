@@ -77,7 +77,7 @@ class FLACConverter:  # pylint: disable=too-few-public-methods
             start = max(0, start - self.include_before)
             end += self.include_after
             temp = tempfile.NamedTemporaryFile(suffix='.flac', delete=False)
-            command = ["ffmpeg", "-ss", str(start), "-t", str(end - start),
+            command = [config.FFMPEG_PATH, "-ss", str(start), "-t", str(end - start),
                        "-y", "-i", self.source_path,
                        "-loglevel", "error", temp.name]
             use_shell = True if os.name == "nt" else False
