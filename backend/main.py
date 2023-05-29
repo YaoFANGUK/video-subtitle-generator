@@ -22,6 +22,7 @@ import math
 import config
 from utils.formatter import FORMATTERS
 from zhconv.zhconv import convert
+import argparse
 
 
 class AudioRecogniser:
@@ -250,9 +251,21 @@ class SubtitleGenerator:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Subtitle Generator')
+    
+    parser.add_argument('-l', '--language', help=config.interface_config['LanguageModeGUI']['SubtitleLanguage'], choices=config.LANGUAGE_LIST, required=False)
+    parser.add_argument('filename', nargs='?', help=config.interface_config['Main']['InputFile'])
+
+    args = parser.parse_args()
+
+    if hasattr(args, 'help'):
+        exit()
+
     # 1. 获取视频地址
-    video_path = input(f"{config.interface_config['Main']['InputFile']}").strip()
+    video_path = args.filename or input(f"{config.interface_config['Main']['InputFile']}").strip()
+
     # 2. 新建字幕生成对象，指定语言
-    sg = SubtitleGenerator(video_path, language=config.REC_LANGUAGE_TYPE)
+    sg = SubtitleGenerator(video_path, language=args.language or config.REC_LANGUAGE_TYPE)
     # 3. 运行程序
+    print('运行程序')
     sg.run()
