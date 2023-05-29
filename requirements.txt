@@ -38,8 +38,5 @@ more-itertools
 transformers>=4.19.0
 ffmpeg-python==0.2.0
 zhconv==1.4.3
+tiktoken==0.4.0
 PySimpleGUI==4.60.4
-config==0.5.1
-openai-whisper
-
-

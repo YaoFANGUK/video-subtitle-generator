@@ -35,6 +35,8 @@ class SubtitleGeneratorGUI:
         self.theme = 'LightBrown12'
         sg.theme(self.theme)
         self.icon = os.path.join(os.path.dirname(__file__), 'design', 'vse.ico')
+        # 字幕提取其窗口
+        self.window = None
         self._load_config()
         self.screen_width, self.screen_height = sg.Window.get_screen_size()
         print(self.screen_width, self.screen_height)
@@ -47,11 +49,9 @@ class SubtitleGeneratorGUI:
             self.progressbar_size = (14, 20)
         # 字幕提取器布局
         self.layout = None
-        # 字幕提取其窗口
-        self.window = None
         # 视频路径
         self.file_path = None
-        # 字幕提取器
+        # 字幕生成器
         self.sg = None
 
     def run(self):

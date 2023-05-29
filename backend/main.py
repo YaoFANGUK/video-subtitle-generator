@@ -11,7 +11,6 @@ import subprocess
 import tempfile
 import time
 import warnings
-import whisper
 warnings.filterwarnings('ignore')
 import librosa
 import os
@@ -19,15 +18,17 @@ import stat
 import audioop
 import wave
 import math
-import config
-from utils.formatter import FORMATTERS
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from backend import config
+from backend import whisper
+from backend.utils.formatter import FORMATTERS
 from zhconv.zhconv import convert
 import argparse
 
-
 class AudioRecogniser:
     def __init__(self, language='auto'):
-        self.model_path = config.ASR_MODEL_PATH
+        self.model_path = config.get_model_path()
         self.model = whisper.load_model(self.model_path)
         self.language = language
 
@@ -46,12 +47,15 @@ class AudioRecogniser:
                 options = whisper.DecodingOptions(fp16=False, language=self.language)
         else:
             # 如果没设置语言则自动检测语言
-            print(f"{config.interface_config['Main']['LanguageDetected']}{max(probs, key=probs.get)}")
+            print(f"{config.get_interface_config()['Main']['LanguageDetected']}{max(probs, key=probs.get)}")
             options = whisper.DecodingOptions(fp16=False)
 
         transcription = whisper.decode(self.model, mel, options)
-        if self.language in ('zh-cn', 'zh-tw', 'zh-hk', 'zh-sg', 'zh-hans', 'zh-hant'):
+        zh_list = ('zh', 'zh-cn', 'zh-tw', 'zh-hk', 'zh-sg', 'zh-hans', 'zh-hant')
+        if self.language in zh_list:
             text = convert(transcription.text, self.language)
+        elif max(probs, key=probs.get) in zh_list:
+            text = convert(transcription.text, 'zh-cn')
         else:
             text = transcription.text
         return text
@@ -73,7 +77,7 @@ class FLACConverter:  # pylint: disable=too-few-public-methods
             start = max(0, start - self.include_before)
             end += self.include_after
             temp = tempfile.NamedTemporaryFile(suffix='.flac', delete=False)
-            command = ["ffmpeg", "-ss", str(start), "-t", str(end - start),
+            command = [config.FFMPEG_PATH, "-ss", str(start), "-t", str(end - start),
                        "-y", "-i", self.source_path,
                        "-loglevel", "error", temp.name]
             use_shell = True if os.name == "nt" else False
@@ -95,7 +99,7 @@ class SubtitleGenerator:
         self.isFinished = False
         if self.language not in config.LANGUAGE_LIST:
             # 如果识别语言不存在，则默认使用auto
-            print(config.interface_config['Main']['IllegalLanguageCode'])
+            print(config.get_interface_config()['Main']['IllegalLanguageCode'])
             self.language = 'auto'
 
     @staticmethod
@@ -209,7 +213,7 @@ class SubtitleGenerator:
         converter = FLACConverter(source_path=audio_filename)
         recognizer = AudioRecogniser(language=self.language)
         transcripts = []
-        print(f"{config.interface_config['Main']['StartGenerateSub']}")
+        print(f"{config.get_interface_config()['Main']['StartGenerateSub']}")
         start_time = time.time()
 
         if regions:
@@ -244,17 +248,17 @@ class SubtitleGenerator:
         os.remove(audio_filename)
         self.isFinished = True
         elapse = time.time() - start_time
-        print(f"{config.interface_config['Main']['FinishGenerateSub']}")
-        print(f"{config.interface_config['Main']['SubLocation']}{dest}")
-        print(f"{config.interface_config['Main']['Elapse']}: {elapse}s")
+        print(f"{config.get_interface_config()['Main']['FinishGenerateSub']}")
+        print(f"{config.get_interface_config()['Main']['SubLocation']}{dest}")
+        print(f"{config.get_interface_config()['Main']['Elapse']}: {elapse}s")
         return dest
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Subtitle Generator')
     
-    parser.add_argument('-l', '--language', help=config.interface_config['LanguageModeGUI']['SubtitleLanguage'], choices=config.LANGUAGE_LIST, required=False)
-    parser.add_argument('filename', nargs='?', help=config.interface_config['Main']['InputFile'])
+    parser.add_argument('-l', '--language', help=config.get_interface_config()['LanguageModeGUI']['SubtitleLanguage'], choices=config.LANGUAGE_LIST, required=False)
+    parser.add_argument('filename', nargs='?', help=config.get_interface_config()['Main']['InputFile'])
 
     args = parser.parse_args()
 
@@ -262,7 +266,7 @@ if __name__ == '__main__':
         exit()
 
     # 1. 获取视频地址
-    video_path = args.filename or input(f"{config.interface_config['Main']['InputFile']}").strip()
+    video_path = args.filename or input(f"{config.get_interface_config()['Main']['InputFile']}").strip()
 
     # 2. 新建字幕生成对象，指定语言
     sg = SubtitleGenerator(video_path, language=args.language or config.REC_LANGUAGE_TYPE)
