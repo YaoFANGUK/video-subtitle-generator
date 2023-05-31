@@ -8,7 +8,6 @@
 import pysrt
 import six
 
-
 def srt_formatter(subtitles, padding_before=0, padding_after=0):
     """
     Serialize a list of subtitles according to the SRT format, with optional time padding.

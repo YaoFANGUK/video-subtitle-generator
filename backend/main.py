@@ -267,7 +267,12 @@ if __name__ == '__main__':
 
     # 1. 获取视频地址
     video_path = args.filename or input(f"{config.get_interface_config()['Main']['InputFile']}").strip()
+<<<<<<< HEAD
+=======
+
+>>>>>>> d7cc5082555d3a7af3ce15f9bd32a45940f10d36
     # 2. 新建字幕生成对象，指定语言
     sg = SubtitleGenerator(video_path, language=args.language or config.REC_LANGUAGE_TYPE)
     # 3. 运行程序
+    print('运行程序')
     sg.run()
