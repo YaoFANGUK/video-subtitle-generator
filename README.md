@@ -64,6 +64,25 @@ python gui.py
 python backend/main.py
 ```
 
+```SHELL
+python backend/main.py -h
+
+ -h
+usage: main.py [-h]
+               [-l {auto,en,zh-cn,zh-tw,zh-hk,zh-sg,zh-hans,zh-hant,de,es,ru,ko,fr,ja,pt,tr,pl,ca,nl,ar,sv,it,id,hi,fi,vi,he,uk,el,ms,cs,ro,da,hu,ta,no,th,ur,hr,bg,lt,la,ml,cy,sk,te,fa,lv,bn,sr,az,sl,kn,et,mk,br,eu,is,hy,ne,mn,bs,kk,sq,sw,gl,mr,pa,si,km,sn,yo,so,af,oc,ka,be,tg,sd}]
+               [filename]
+
+Subtitle Generator
+
+positional arguments:
+  filename              请输入文件完整路径：
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -l {auto,en,zh-cn,zh-tw,zh-hk,zh-sg,zh-hans,zh-hant,de,es,ru,ko,fr,ja,pt,tr,pl,ca,nl,ar,sv,it,id,hi,fi,vi,he,uk,el,ms,cs,ro,da,hu,ta,no,th,ur,hr,bg,lt,la,ml,cy,sk,te,fa,lv,bn,sr,az,sl,kn,et,mk,br,eu,is,hy,ne,mn,bs,kk,sq,sw,gl,mr,pa,si,km,sn,yo,so,af,oc,ka,be,tg,sd}, --language {auto,en,zh-cn,zh-tw,zh-hk,zh-sg,zh-hans,zh-hant,de,es,ru,ko,fr,ja,pt,tr,pl,ca,nl,ar,sv,it,id,hi,fi,vi,he,uk,el,ms,cs,ro,da,hu,ta,no,th,ur,hr,bg,lt,la,ml,cy,sk,te,fa,lv,bn,sr,az,sl,kn,et,mk,br,eu,is,hy,ne,mn,bs,kk,sq,sw,gl,mr,pa,si,km,sn,yo,so,af,oc,ka,be,tg,sd}
+
+python backend/main.py test/test_cn.mp4 -l zh-cn  
+```
 
 - 代码调用：
 
